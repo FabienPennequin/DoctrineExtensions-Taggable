@@ -24,11 +24,6 @@ class Article implements Taggable
 
     protected $tags;
 
-    public function __construct()
-    {
-        $this->tags = new ArrayCollection();
-    }
-
     public function getId()
     {
         return $this->id;
