@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="DoctrineExtensions\Taggable\Entity\Tag">
+
+        <id name="id" column="id" type="integer">
+            <generator strategy="AUTO" />
+        </id>
+
+        <field name="name"          column="name"           type="string"   unique="true" />
+
+        <field name="createdAt"     column="created_at"     type="datetime" />
+        <field name="updatedAt"     column="updated_at"     type="datetime" />
+
+        <one-to-many field="tagging" target-entity="DoctrineExtensions\Taggable\Entity\Tagging" mapped-by="tag" fetch="EAGER" />
+
+    </entity>
+
+</doctrine-mapping>
