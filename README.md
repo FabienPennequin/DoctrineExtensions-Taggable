@@ -1,0 +1,124 @@
+# Doctrine Extensions Taggable
+
+This repository contains the Taggable extension for Doctrine 2. This allows to add
+tags on your doctrine entities easily.
+
+
+## Use
+
+
+### Implement the DoctrineExtensions\Taggable\Taggable interface.
+
+First, your entity must implement the `DoctrineExtensions\Taggable\Taggable` interface.
+Two methods in your entity must be written:
+
+ * `getResourceId()` must return an unique identifier for your entity
+ * `getTags()` must return a doctrine collection (`Doctrine\Common\Collections\Collection`)
+
+
+Example:
+
+    namespace MyProject;
+
+    use DoctrineExtensions\Taggable\Taggable;
+    use Doctrine\Common\Collections\ArrayCollection;
+
+    /**
+     * @Entity
+     */
+    class Article implements Taggable
+    {
+        /**
+         * @Id
+         * @GeneratedValue
+         * @Column(type="integer")
+         */
+        public $id;
+
+        /**
+         * @Column(name="title", type="string", length=50)
+         */
+        public $title;
+
+        protected $tags;
+
+        public function getId()
+        {
+            return $this->id;
+        }
+
+        public function setTitle($title)
+        {
+            return $this->title = $title;
+        }
+
+        public function getResourceId()
+        {
+            return 'article:'.$this->getId();
+        }
+
+        public function getTags()
+        {
+            $this->tags = $this->tags ?: new ArrayCollection();
+            return $this->tags;
+        }
+    }
+
+
+### Setup Doctrine
+
+Finally, you need to setup doctrine for register metadata directory and register TagListener.
+
+
+First, register the metadata directory of this package.
+
+    $config = new \Doctrine\ORM\Configuration();
+    // ...
+    $driverImpl = new \Doctrine\ORM\Mapping\Driver\XmlDriver(array('/path/to/doctrine-extensions-taggable/metadata'));
+    $config->setMetadataDriverImpl($driverImpl);
+
+or with `DriverChain`:
+
+    $driverImpl = new \Doctrine\ORM\Mapping\Driver\DriverChain();
+    // ...
+    $driverImpl->addDriver(new \Doctrine\ORM\Mapping\Driver\XmlDriver('/path/to/doctrine-extensions-taggable/metadata'), 'DoctrineExtensions\\Taggable\\Entity');
+
+
+Then, register the TagListener.
+
+    // $this->em = EntityManager::create($connection, $config);
+    // ...
+
+    $this->tagManager = new TagManager($this->em);
+    $this->em->getEventManager()->addEventSubscriber(new TagListener($this->tagManager));
+
+
+### Using TagManager
+
+Now, you can use TagManager.
+
+    // Load or create a new tag
+    $tag = $this->tagManager->loadOrCreateTag('Smallville');
+
+    // Load or create a list of tags
+    $tags = $this->tagManager->loadOrCreateTags(array('Clark Kent', 'Loïs Lane', 'Superman'));
+
+    // Add a tag on your taggable resource..
+    $this->tagManager->addTag($tag, $article);
+
+    // Add a list of tags on your taggable resource..
+    $this->tagManager->addTags($tags, $article);
+
+    // Remove a tog on your taggable resource..
+    $this->tagManager->remove($tag, $article);
+
+    // Save tagging..
+    // Note: $article must be saved in your database before (persist & flush)
+    $this->tagManager->saveTagging($article);
+
+    // Load tagging..
+    $this->tagManager->loadTagging($article);
+
+    // Replace all current tags..
+    $tags = $this->tagManager->loadOrCreateTags(array('Smallville', 'Superman'));
+    $this->tagManager->replaceTags($tags, $article);
