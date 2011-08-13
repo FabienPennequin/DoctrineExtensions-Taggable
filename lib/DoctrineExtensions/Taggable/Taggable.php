@@ -22,14 +22,14 @@ interface Taggable
      *
      * @return string
      */
-    function getResourceType();
+    function getTaggableType();
 
     /**
      * Returns the unique taggable resource identifier
      *
      * @return string
      */
-    function getResourceId();
+    function getTaggableId();
 
     /**
      * Returns the collection of tags for this Taggable entity

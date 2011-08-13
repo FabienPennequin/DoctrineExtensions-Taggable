@@ -78,8 +78,8 @@ class Tagging
      */
     public function setResource(Taggable $resource)
     {
-        $this->resourceType = $resource->getResourceType();
-        $this->resourceId = $resource->getResourceId();
+        $this->resourceType = $resource->getTaggableType();
+        $this->resourceId = $resource->getTaggableId();
     }
 
     /**

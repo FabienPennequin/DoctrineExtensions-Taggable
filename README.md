@@ -12,8 +12,8 @@ tags on your doctrine entities easily.
 First, your entity must implement the `DoctrineExtensions\Taggable\Taggable` interface.
 Three methods in your entity must be written:
 
- * `getResourceType()` must return an unique name for your entity model
- * `getResourceId()` must return an unique identifier for your entity
+ * `getTaggableType()` must return an unique name for your entity model
+ * `getTaggableId()` must return an unique identifier for your entity
  * `getTags()` must return a doctrine collection (`Doctrine\Common\Collections\Collection`)
 
 
@@ -53,12 +53,12 @@ Example:
             return $this->title = $title;
         }
 
-        public function getResourceType()
+        public function getTaggableType()
         {
             return 'article';
         }
 
-        public function getResourceId()
+        public function getTaggableId()
         {
             return $this->getId();
         }

@@ -31,8 +31,8 @@ class TaggingTest extends \PHPUnit_Framework_TestCase
         $article->id = 123;
 
         $tagging = new Tagging($tag, $article);
-        $this->assertEquals($article->getResourceType(), $tagging->getResourceType());
-        $this->assertEquals($article->getResourceId(), $tagging->getResourceId());
+        $this->assertEquals($article->getTaggableType(), $tagging->getResourceType());
+        $this->assertEquals($article->getTaggableId(), $tagging->getResourceId());
         $this->assertEquals($tag, $tagging->getTag());
     }
 
@@ -61,7 +61,7 @@ class TaggingTest extends \PHPUnit_Framework_TestCase
         $tagging = new Tagging();
         $tagging->setResource($article);
 
-        $this->assertEquals($article->getResourceType(), $tagging->getResourceType());
-        $this->assertEquals($article->getResourceId(), $article->getResourceId());
+        $this->assertEquals($article->getTaggableType(), $tagging->getResourceType());
+        $this->assertEquals($article->getTaggableId(), $tagging->getResourceId());
     }
 }

@@ -208,8 +208,8 @@ class TagManager
             ->from($this->tagClass, 't')
 
             ->innerJoin('t.tagging', 't2', Expr\Join::WITH, 't2.resourceId = :id AND t2.resourceType = :type')
-            ->setParameter('id', $resource->getResourceId())
-            ->setParameter('type', $resource->getResourceType())
+            ->setParameter('id', $resource->getTaggableId())
+            ->setParameter('type', $resource->getTaggableType())
 
             // ->orderBy('t.name', 'ASC')
 
@@ -230,10 +230,10 @@ class TagManager
             ->from($this->taggingClass, 't')
 
             ->where('t.resourceType = :type')
-            ->setParameter('type', $resource->getResourceType())
+            ->setParameter('type', $resource->getTaggableType())
 
             ->andWhere('t.resourceId = :id')
-            ->setParameter('id', $resource->getResourceId())
+            ->setParameter('id', $resource->getTaggableId())
 
             ->getQuery()
             ->getResult();
