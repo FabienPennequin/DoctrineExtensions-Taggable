@@ -18,6 +18,13 @@ namespace DoctrineExtensions\Taggable;
 interface Taggable
 {
     /**
+     * Returns the unique taggable resource type
+     *
+     * @return string
+     */
+    function getResourceType();
+
+    /**
      * Returns the unique taggable resource identifier
      *
      * @return string

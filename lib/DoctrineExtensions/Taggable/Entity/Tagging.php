@@ -16,6 +16,8 @@ class Tagging
 {
     protected $id;
     protected $tag;
+
+    protected $resourceType;
     protected $resourceId;
 
     protected $createdAt;
@@ -76,7 +78,18 @@ class Tagging
      */
     public function setResource(Taggable $resource)
     {
+        $this->resourceType = $resource->getResourceType();
         $this->resourceId = $resource->getResourceId();
+    }
+
+    /**
+     * Returns the tagged resource type
+     *
+     * @return Taggable
+     */
+    public function getResourceType()
+    {
+        return $this->resourceType;
     }
 
     /**

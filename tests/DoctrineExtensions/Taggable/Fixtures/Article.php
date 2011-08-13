@@ -34,9 +34,14 @@ class Article implements Taggable
         return $this->title = $title;
     }
 
+    public function getResourceType()
+    {
+        return 'test-article';
+    }
+
     public function getResourceId()
     {
-        return 'test.article:'.$this->getId();
+        return $this->getId();
     }
 
     public function getTags()

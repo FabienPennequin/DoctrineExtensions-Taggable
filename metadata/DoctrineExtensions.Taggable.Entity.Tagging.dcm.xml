@@ -10,6 +10,7 @@
             <generator strategy="AUTO" />
         </id>
 
+        <field name="resourceType"  column="resource_type"  type="string" length="50" />
         <field name="resourceId"    column="resource_id"    type="string" length="50" />
 
         <field name="createdAt"     column="created_at"     type="datetime" />
@@ -22,7 +23,7 @@
         </many-to-one>
 
         <unique-constraints>
-            <unique-constraint columns="tag_id,resource_id" name="tagging_idx" />
+            <unique-constraint columns="tag_id,resource_type,resource_id" name="tagging_idx" />
         </unique-constraints>
 
     </entity>
