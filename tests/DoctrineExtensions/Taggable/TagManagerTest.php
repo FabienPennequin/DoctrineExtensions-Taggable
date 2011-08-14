@@ -284,10 +284,10 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers DoctrineExtensions\Taggable\TagManager::splitTagNames
      */
-    public function testSplitTagsNames()
+    public function testSplitTagNames()
     {
         $this->assertEquals(array('Smallville'), $this->manager->splitTagNames('Smallville'));
-        $this->assertEquals(array('Smallville'), $this->manager->splitTagsNames(' Smallville '));
+        $this->assertEquals(array('Smallville'), $this->manager->splitTagNames(' Smallville '));
 
         $this->assertEquals(array('Smallville', 'Superman', 'TV'), $this->manager->splitTagNames('Smallville,Superman,TV'));
         $this->assertEquals(array('Smallville', 'Superman', 'TV'), $this->manager->splitTagNames(' Smallville, Superman    ,    TV   '));
