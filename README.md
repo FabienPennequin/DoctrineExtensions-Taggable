@@ -107,7 +107,8 @@ Now, you can use TagManager.
     $tag = $this->tagManager->loadOrCreateTag('Smallville');
 
     // Load or create a list of tags
-    $tags = $this->tagManager->loadOrCreateTags(array('Clark Kent', 'Loïs Lane', 'Superman'));
+    $tagNames = $this->tagManager->splitTagNames('Clark Kent, Loïs Lane, Superman'));
+    $tags = $this->tagManager->loadOrCreateTags($tagNames);
 
     // Add a tag on your taggable resource..
     $this->tagManager->addTag($tag, $article);
