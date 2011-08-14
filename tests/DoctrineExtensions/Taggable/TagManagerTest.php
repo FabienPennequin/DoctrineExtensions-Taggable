@@ -295,4 +295,25 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array('Smallville', 'Superman', 'TV'), $this->manager->splitTagNames(' Smallville Superman        TV   ', ' '));
     }
+
+    /**
+     * @covers DoctrineExtensions\Taggable\TagManager::getTagNames
+     */
+    public function testGetTagNames()
+    {
+        $article = new Article();
+        $article->setTitle('Unit Test');
+
+        $this->assertEquals(array(), $this->manager->getTagNames($article));
+
+        $tag1 = new Tag('Smallville');
+        $this->manager->addTag($tag1, $article);
+        $this->assertEquals(array('Smallville'), $this->manager->getTagNames($article));
+
+        $tag2 = new Tag('Superman');
+        $tag3 = new Tag('TV');
+        $this->manager->addTags(array($tag2, $tag3), $article);
+        $this->assertEquals(array('Smallville', 'Superman', 'TV'), $this->manager->getTagNames($article));
+    }
+
 }

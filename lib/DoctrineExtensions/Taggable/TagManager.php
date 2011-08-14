@@ -259,6 +259,24 @@ class TagManager
     }
 
     /**
+     * Returns an array of tag names for the given Taggable resource.
+     *
+     * @param Taggable  $resource   Taggable resource
+     */
+    public function getTagNames(Taggable $resource)
+    {
+        $names = array();
+
+        if (sizeof($resource->getTags()) > 0) {
+            foreach ($resource->getTags() as $tag) {
+                $names[] = $tag->getName();
+            }
+        }
+
+        return $names;
+    }
+
+    /**
      * Creates a new Tag object
      *
      * @param string    $name   Tag name
