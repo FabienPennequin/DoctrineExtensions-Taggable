@@ -280,4 +280,19 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, sizeof($taggingRepository->findAll()));
         $this->assertEquals(3, sizeof($tagRepository->findAll()));
     }
+
+    /**
+     * @covers DoctrineExtensions\Taggable\TagManager::splitTagNames
+     */
+    public function testSplitTagsNames()
+    {
+        $this->assertEquals(array('Smallville'), $this->manager->splitTagNames('Smallville'));
+        $this->assertEquals(array('Smallville'), $this->manager->splitTagsNames(' Smallville '));
+
+        $this->assertEquals(array('Smallville', 'Superman', 'TV'), $this->manager->splitTagNames('Smallville,Superman,TV'));
+        $this->assertEquals(array('Smallville', 'Superman', 'TV'), $this->manager->splitTagNames(' Smallville, Superman    ,    TV   '));
+        $this->assertEquals(array('Smallville', 'Superman', 'TV'), $this->manager->splitTagNames('Smallville , , Superman , TV'));
+
+        $this->assertEquals(array('Smallville', 'Superman', 'TV'), $this->manager->splitTagNames(' Smallville Superman        TV   ', ' '));
+    }
 }

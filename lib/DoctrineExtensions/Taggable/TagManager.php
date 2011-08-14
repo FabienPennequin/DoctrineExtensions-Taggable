@@ -244,6 +244,21 @@ class TagManager
     }
 
     /**
+     * Splits an string into an array of valid tag names
+     *
+     * @param string    $names      String of tag names
+     * @param string    $separator  Tag name separator
+     */
+    public function splitTagNames($names, $separator=',')
+    {
+        $tags = explode($separator, $names);
+        $tags = array_map('trim', $tags);
+        $tags = array_filter($tags, function ($value) { return !empty($value); });
+
+        return array_values($tags);
+    }
+
+    /**
      * Creates a new Tag object
      *
      * @param string    $name   Tag name
