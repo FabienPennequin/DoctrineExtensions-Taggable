@@ -57,13 +57,15 @@ class TagRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->loadFixtures();
 
         $tags = $this->getTagRepository()->getTagsWithCountArray('test-article');
-
         $this->assertEquals(array(
             'alltag' => 3,
             'tag3'   => 2,
             'tag1'   => 1,
             'tag2'   => 1,
         ), $tags);
+
+        $tags = $this->getTagRepository()->getTagsWithCountArray('test-article', 2);
+        $this->assertEquals(array('alltag' => 3, 'tag3' => 2), $tags);
     }
 
     public function testGetResourceIdsForTag()
