@@ -202,6 +202,8 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
 
         $tagNames = array('Smallville');
         $this->assertEquals(array($tags[0]), $this->manager->loadOrCreateTags($tagNames));
+
+        $this->assertEquals(array(), $this->manager->loadOrCreateTags(array()));
     }
 
     /**
