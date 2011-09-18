@@ -105,6 +105,10 @@ class TagManager
      */
     public function loadOrCreateTags(array $names)
     {
+        if (empty($names)) {
+            return array();
+        }
+
         $names = array_unique($names);
 
         $builder = $this->em->createQueryBuilder();
