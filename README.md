@@ -129,3 +129,25 @@ Now, you can use TagManager.
     // Replace all current tags..
     $tags = $this->tagManager->loadOrCreateTags(array('Smallville', 'Superman'));
     $this->tagManager->replaceTags($tags, $article);
+
+### Tag-related queries
+
+The Tag entity has a repository class, with two particularly helpful methods:
+
+```php
+<?php
+
+    // somewhere crate or already have the entity manager
+    // $em = EntityManager::create($connection, $config);
+
+    $tagRepo = $em->getRepository('DoctrineExtensions\\Taggable\\Entity\\Tag');
+
+    // find all article ids matching a particular query
+    $ids = $tagRepo->getResourceIdsForTag('article_type', 'footag');
+
+    // get the tags and count for all articles
+    $tags = $tagRepo->getTagsWithCountArray('article_type');
+    foreach ($tags as $name => $count) {
+        echo sprintf('The tag "%s" matches "%s" articles', $name, $count);
+    }
+```
