@@ -12,9 +12,9 @@ namespace DoctrineExtensions\Taggable;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Expr;
-use Doctrine\Commons\Collections\Collection;
 use DoctrineExtensions\Taggable\Entity\Tag;
 use DoctrineExtensions\Taggable\Entity\Tagging;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * TagManager.
@@ -36,56 +36,6 @@ class TagManager
     }
 
     /**
-     * Adds a tag on the given taggable resource
-     *
-     * @param Tag       $tag        Tag object
-     * @param Taggable  $resource   Taggable resource
-     */
-    public function addTag(Tag $tag, Taggable $resource)
-    {
-        $resource->getTags()->add($tag);
-    }
-
-    /**
-     * Adds multiple tags on the given taggable resource
-     *
-     * @param Tag[]     $tags       Array of Tag objects
-     * @param Taggable  $resource   Taggable resource
-     */
-    public function addTags(array $tags, Taggable $resource)
-    {
-        foreach ($tags as $tag) {
-            if ($tag instanceof Tag) {
-                $this->addTag($tag, $resource);
-            }
-        }
-    }
-
-    /**
-     * Removes an existant tag on the given taggable resource
-     *
-     * @param Tag       $tag        Tag object
-     * @param Taggable  $resource   Taggable resource
-     * @return Boolean
-     */
-    public function removeTag(Tag $tag, Taggable $resource)
-    {
-        return $resource->getTags()->removeElement($tag);
-    }
-
-    /**
-     * Replaces all current tags on the given taggable resource
-     *
-     * @param Tag[]     $tags       Array of Tag objects
-     * @param Taggable  $resource   Taggable resource
-     */
-    public function replaceTags(array $tags, Taggable $resource)
-    {
-        $resource->getTags()->clear();
-        $this->addTags($tags, $resource);
-    }
-
-    /**
      * Loads or creates a tag from tag name
      *
      * @param array  $name  Tag name
@@ -101,12 +51,12 @@ class TagManager
      * Loads or creates multiples tags from a list of tag names
      *
      * @param array  $names   Array of tag names
-     * @return Tag[]
+     * @return ArrayCollection
      */
     public function loadOrCreateTags(array $names)
     {
         if (empty($names)) {
-            return array();
+            return new ArrayCollection();
         }
 
         $names = array_unique($names);
@@ -140,7 +90,7 @@ class TagManager
             $this->em->flush();
         }
 
-        return $tags;
+        return new ArrayCollection($tags);
     }
 
     /**
@@ -151,7 +101,7 @@ class TagManager
     public function saveTagging(Taggable $resource)
     {
         $oldTags = $this->getTagging($resource);
-        $newTags = $resource->getTags();
+        $newTags = $this->getTagObjectsForResource($resource);
         $tagsToAdd = $newTags;
 
         if ($oldTags != null and is_array($oldTags)) {
@@ -253,7 +203,7 @@ class TagManager
      * @param string    $names      String of tag names
      * @param string    $separator  Tag name separator
      */
-    public function splitTagNames($names, $separator=',')
+    public function splitTagNames($names, $separator = ',')
     {
         $tags = explode($separator, $names);
         $tags = array_map('trim', $tags);
@@ -271,13 +221,38 @@ class TagManager
     {
         $names = array();
 
-        if (sizeof($resource->getTags()) > 0) {
-            foreach ($resource->getTags() as $tag) {
+        if (sizeof($this->getTagObjectsForResource($resource)) > 0) {
+            foreach ($this->getTagObjectsForResource($resource) as $tag) {
                 $names[] = $tag->getName();
             }
         }
 
         return $names;
+    }
+
+    /**
+     * Replaces all current tags on the given taggable resource
+     *
+     * @param Tag[]     $tags       Array of Tag objects
+     * @param Taggable  $resource   Taggable resource
+     */
+    protected function replaceTags(array $tags, Taggable $resource)
+    {
+        if ($resource instanceof TaggableObjectInterface) {
+            $resource->getTags()->clear();
+            foreach ($tags as $tag) {
+                $resource->getTags()->add($tag);
+            }
+        } elseif ($resource instanceof TaggableStringInterface) {
+            $tagsArray = array();
+            foreach ($tags as $tag) {
+                $tagsArray[] = $tag->getName();
+            }
+
+            $resource->setTagString(implode(', ', $tagsArray));
+        } else {
+            throw new \InvalidArgumentException(sprintf('Invalid tag resource type'));
+        }
     }
 
     /**
@@ -301,5 +276,18 @@ class TagManager
     protected function createTagging(Tag $tag, Taggable $resource)
     {
         return new $this->taggingClass($tag, $resource);
+    }
+
+    protected function getTagObjectsForResource(Taggable $resource)
+    {
+        if ($resource instanceof TaggableObjectInterface) {
+            return $resource->getTags();
+        } elseif ($resource instanceof TaggableStringInterface) {
+            $tagNames = $this->splitTagNames($resource->getTagString());
+
+            return $this->loadOrCreateTags($tagNames);
+        } else {
+            throw new \InvalidArgumentException(sprintf('Invalid tag resource type'));
+        }
     }
 }

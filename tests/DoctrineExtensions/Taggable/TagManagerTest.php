@@ -8,12 +8,14 @@
  * file that was distributed with this source code.
  */
 
-require_once __DIR__.'/Fixtures/Article.php';
+require_once __DIR__.'/Fixtures/TaggableObjectArticle.php';
+require_once __DIR__.'/Fixtures/TaggableStringArticle.php';
 
 use DoctrineExtensions\Taggable\TagManager;
 use DoctrineExtensions\Taggable\TagListener;
 use DoctrineExtensions\Taggable\Entity\Tag;
-use Tests\DoctrineExtensions\Taggable\Fixtures\Article;
+use Tests\DoctrineExtensions\Taggable\Fixtures\TaggableObjectArticle;
+use Tests\DoctrineExtensions\Taggable\Fixtures\TaggableStringArticle;
 
 
 class TagManagerTest extends \PHPUnit_Framework_TestCase
@@ -47,7 +49,8 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
         $schemaTool->createSchema(array(
             $this->em->getClassMetadata('DoctrineExtensions\\Taggable\\Entity\\Tag'),
             $this->em->getClassMetadata('DoctrineExtensions\\Taggable\\Entity\\Tagging'),
-            $this->em->getClassMetadata('Tests\\DoctrineExtensions\\Taggable\\Fixtures\\Article'),
+            $this->em->getClassMetadata('Tests\\DoctrineExtensions\\Taggable\\Fixtures\\TaggableObjectArticle'),
+            $this->em->getClassMetadata('Tests\\DoctrineExtensions\\Taggable\\Fixtures\\TaggableStringArticle'),
         ));
 
         $this->manager = new TagManager($this->em);
@@ -61,102 +64,6 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
     {
         $manager = new TagManager($this->em);
         $this->assertInstanceOf('DoctrineExtensions\Taggable\TagManager', $manager);
-    }
-
-    /**
-     * @covers DoctrineExtensions\Taggable\TagManager::addTag
-     */
-    public function testAddTag()
-    {
-        $article = new Article();
-        $article->setTitle('Test adding a tag...');
-
-        $tag = new Tag('Doctrine2');
-        $this->manager->addTag($tag, $article);
-
-        $this->assertEquals(1, $article->getTags()->count());
-
-        $firstTag = $article->getTags()->get(0);
-        $this->assertInstanceOf('DoctrineExtensions\Taggable\Entity\Tag', $firstTag);
-        $this->assertEquals($tag, $firstTag);
-    }
-
-    /**
-     * @covers DoctrineExtensions\Taggable\TagManager::addTags
-     */
-    public function testAddTags()
-    {
-        $article = new Article();
-        $article->setTitle('Test adding a tag...');
-
-        $tag1 = new Tag('Doctrine2');
-        $tag2 = new Tag('Symfony2');
-        $tag3 = new Tag('PHP 5.3');
-        $this->manager->addTags(array($tag1, 'tag', $tag2, $tag3), $article);
-
-        $this->assertEquals(3, $article->getTags()->count());
-        $this->assertEquals(array($tag1, $tag2, $tag3), $article->getTags()->toArray());
-
-    }
-
-    /**
-     * @covers DoctrineExtensions\Taggable\TagManager::removeTag
-     */
-    public function testRemoveTag()
-    {
-        $tag1 = new Tag('Doctrine2');
-        $tag2 = new Tag('Testing');
-        $tag3 = new Tag('Symfony2');
-
-        $article = new Article();
-        $article->setTitle('Test removing a tag...');
-
-        $this->manager->addTag($tag1, $article);
-        $this->manager->addTag($tag2, $article);
-        $this->manager->addTag($tag3, $article);
-
-        $this->assertEquals(3, $article->getTags()->count());
-
-        $this->manager->removeTag($tag2, $article);
-        $this->assertEquals(2, $article->getTags()->count());
-        $this->assertEquals($tag1, $article->getTags()->get(0));
-        $this->assertNull($article->getTags()->get(1));
-        $this->assertEquals($tag3, $article->getTags()->get(2));
-
-        $this->manager->removeTag($tag2, $article);
-        $this->assertEquals(2, $article->getTags()->count());
-
-        $this->manager->removeTag($tag1, $article);
-        $this->assertEquals(1, $article->getTags()->count());
-
-        $this->manager->removeTag($tag3, $article);
-        $this->assertEquals(0, $article->getTags()->count());
-    }
-
-    /**
-     * @covers DoctrineExtensions\Taggable\TagManager::replaceTags
-     */
-    public function testReplaceTags()
-    {
-        $tag1 = new Tag('Smallville');
-        $tag2 = new Tag('Superman');
-        $tag3 = new Tag('TV');
-
-        $article = new Article();
-        $article->setTitle('Test removing a tag...');
-
-        $tags1 = array($tag1, $tag2, $tag3);
-        $this->manager->addTags($tags1, $article);
-        $this->assertEquals(3, $article->getTags()->count());
-        $this->assertEquals($tags1, $article->getTags()->toArray());
-
-        $tag4 = new Tag('Clark Kent');
-        $tag5 = new Tag('Loïs Lane');
-
-        $tags2 = array($tag1, $tag3, $tag4, $tag5);
-        $this->manager->replaceTags($tags2, $article);
-        $this->assertEquals(4, $article->getTags()->count());
-        $this->assertEquals($tags2, $article->getTags()->toArray());
     }
 
     /**
@@ -182,7 +89,7 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
         $tagNames = array('Smallville', 'Superman', 'Smallville', 'TV');
         $tags = $this->manager->loadOrCreateTags($tagNames);
 
-        $this->assertInternalType('array', $tags);
+        $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $tags);
         $this->assertEquals(3, sizeof($tags));
 
         $this->assertInstanceOf('DoctrineExtensions\Taggable\Entity\Tag', $tags[0]);
@@ -201,9 +108,9 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
 
 
         $tagNames = array('Smallville');
-        $this->assertEquals(array($tags[0]), $this->manager->loadOrCreateTags($tagNames));
+        $this->assertEquals($tags[0], $this->manager->loadOrCreateTags($tagNames)->first());
 
-        $this->assertEquals(array(), $this->manager->loadOrCreateTags(array()));
+        $this->assertEquals(0, count($this->manager->loadOrCreateTags(array())));
     }
 
     /**
@@ -215,21 +122,21 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
     public function testSaveLoadTagging()
     {
         $title = 'Testing...';
-        $article = new Article();
+        $article = new TaggableObjectArticle();
         $article->setTitle($title);
 
         $this->em->persist($article);
         $this->em->flush();
 
         $tags1 = $this->manager->loadOrCreateTags(array('Smallville', 'Superman', 'TV'));
-        $this->manager->addTags($tags1, $article);
+        $article->setTags($tags1);
         $this->manager->saveTagging($article);
 
         unset($article);
         $this->em->clear();
 
         $loadedArticle = $this->em
-            ->getRepository('Tests\DoctrineExtensions\Taggable\Fixtures\Article')
+            ->getRepository('Tests\DoctrineExtensions\Taggable\Fixtures\TaggableObjectArticle')
             ->findOneBy(array('title' => $title));
 
         $this->assertNotNull($loadedArticle);
@@ -244,7 +151,7 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
 
         $article = $loadedArticle;
         $tags2 = $this->manager->loadOrCreateTags(array('Smallville', 'TV', 'Clark Kent', 'Loïs Lane'));
-        $this->manager->replaceTags($tags2, $article);
+        $article->setTags($tags2);
         $this->manager->saveTagging($article);
 
         $this->manager->loadTagging($article);
@@ -253,6 +160,27 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($tags2[1]->getId(), $loadedArticle->getTags()->get(1)->getId());
         $this->assertEquals($tags2[2]->getId(), $loadedArticle->getTags()->get(2)->getId());
         $this->assertEquals($tags2[3]->getId(), $loadedArticle->getTags()->get(3)->getId());
+
+        // test a TagStringInterface entity
+        $title = 'Testing-tag-string';
+        $article = new TaggableStringArticle();
+        $article->setTitle($title);
+
+        $this->em->persist($article);
+        $this->em->flush();
+
+        $article->setTagString('Foo, Bar');
+        $this->manager->saveTagging($article);
+
+        unset($article);
+        $this->em->clear();
+
+        $loadedArticle = $this->em
+            ->getRepository('Tests\DoctrineExtensions\Taggable\Fixtures\TaggableStringArticle')
+            ->findOneBy(array('title' => $title));
+
+        $this->manager->loadTagging($loadedArticle);
+        $this->assertEquals('Foo, Bar', $loadedArticle->getTagString());
     }
 
     public function testDeleteResource()
@@ -263,14 +191,14 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
         $tagRepository = $this->em
             ->getRepository('DoctrineExtensions\Taggable\Entity\Tag');
 
-        $article = new Article();
+        $article = new TaggableObjectArticle();
         $article->setTitle('Testing...');
 
         $this->em->persist($article);
         $this->em->flush();
 
         $tags = $this->manager->loadOrCreateTags(array('Smallville', 'Superman', 'TV'));
-        $this->manager->addTags($tags, $article);
+        $article->setTags($tags);
         $this->manager->saveTagging($article);
 
         $this->assertEquals(3, sizeof($taggingRepository->findAll()));
@@ -303,18 +231,19 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetTagNames()
     {
-        $article = new Article();
+        $article = new TaggableObjectArticle();
         $article->setTitle('Unit Test');
 
         $this->assertEquals(array(), $this->manager->getTagNames($article));
 
         $tag1 = new Tag('Smallville');
-        $this->manager->addTag($tag1, $article);
+        $article->getTags()->add($tag1);
         $this->assertEquals(array('Smallville'), $this->manager->getTagNames($article));
 
         $tag2 = new Tag('Superman');
         $tag3 = new Tag('TV');
-        $this->manager->addTags(array($tag2, $tag3), $article);
+        $article->getTags()->add($tag2);
+        $article->getTags()->add($tag3);
         $this->assertEquals(array('Smallville', 'Superman', 'TV'), $this->manager->getTagNames($article));
     }
 

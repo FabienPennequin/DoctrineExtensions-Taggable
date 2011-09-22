@@ -30,11 +30,4 @@ interface Taggable
      * @return string
      */
     function getTaggableId();
-
-    /**
-     * Returns the collection of tags for this Taggable entity
-     *
-     * @return Doctrine\Common\Collections\Collection
-     */
-    function getTags();
 }

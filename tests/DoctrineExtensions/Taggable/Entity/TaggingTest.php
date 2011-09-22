@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-require_once __DIR__.'/../Fixtures/Article.php';
+require_once __DIR__.'/../Fixtures/TaggableObjectArticle.php';
 
 use DoctrineExtensions\Taggable\Entity\Tagging;
 use DoctrineExtensions\Taggable\Entity\Tag;
 
-use Tests\DoctrineExtensions\Taggable\Fixtures\Article;
+use Tests\DoctrineExtensions\Taggable\Fixtures\TaggableObjectArticle as Article;
 
 class TaggingTest extends \PHPUnit_Framework_TestCase
 {

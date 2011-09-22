@@ -2,7 +2,7 @@
 
 namespace DoctrineExtensions\Taggable\Entity;
 
-use Tests\DoctrineExtensions\Taggable\Fixtures\Article;
+use Tests\DoctrineExtensions\Taggable\Fixtures\TaggableObjectArticle as Article;
 use DoctrineExtensions\Taggable\TagManager;
 use DoctrineExtensions\Taggable\TagListener;
 
@@ -45,7 +45,7 @@ class TagRepositoryTest extends \PHPUnit_Framework_TestCase
         $schemaTool->createSchema(array(
             $this->em->getClassMetadata('DoctrineExtensions\\Taggable\\Entity\\Tag'),
             $this->em->getClassMetadata('DoctrineExtensions\\Taggable\\Entity\\Tagging'),
-            $this->em->getClassMetadata('Tests\\DoctrineExtensions\\Taggable\\Fixtures\\Article'),
+            $this->em->getClassMetadata('Tests\\DoctrineExtensions\\Taggable\\Fixtures\\TaggableObjectArticle'),
         ));
 
         $this->manager = new TagManager($this->em);
@@ -96,7 +96,7 @@ class TagRepositoryTest extends \PHPUnit_Framework_TestCase
     private function getArticleRepository()
     {
         return $this->em
-            ->getRepository('Tests\\DoctrineExtensions\\Taggable\\Fixtures\\Article')
+            ->getRepository('Tests\\DoctrineExtensions\\Taggable\\Fixtures\\TaggableObjectArticle')
         ;
     }
 
@@ -131,11 +131,11 @@ class TagRepositoryTest extends \PHPUnit_Framework_TestCase
 
             if ($i != 4) {
                 // give them their own tag and the all tag
-                $this->manager->addTag($tags[$i], $article);
-                $this->manager->addTag($tagAll, $article);
+                $article->getTags()->add($tags[$i]);
+                $article->getTags()->add($tagAll);
             } else {
                 // does't get its own tag, but get's 3's tag
-                $this->manager->addTag($tags[3], $article);
+                $article->getTags()->add($tags[3]);
             }
         }
 
