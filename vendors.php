@@ -4,10 +4,12 @@ set_time_limit(0);
 
 $vendorDir = __DIR__.'/vendor';
 
+$version = isset($_SERVER['DOCTRINE_VERSION']) ? 'origin/'.$_SERVER['DOCTRINE_VERSION'] : 'origin/master';
+
 $deps = array(
-    array('doctrine/common', 'https://github.com/doctrine/common.git', 'origin/2.1.x'),
-    array('doctrine/dbal', 'https://github.com/doctrine/dbal.git', 'origin/2.1.x'),
-    array('doctrine/orm', 'https://github.com/doctrine/doctrine2.git', 'origin/2.1.x'),
+    array('doctrine/common', 'https://github.com/doctrine/common.git', $version),
+    array('doctrine/dbal', 'https://github.com/doctrine/dbal.git', $version),
+    array('doctrine/orm', 'https://github.com/doctrine/doctrine2.git', $version),
 );
 
 foreach ($deps as $dep) {

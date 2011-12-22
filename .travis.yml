@@ -4,6 +4,11 @@ php:
   - 5.3
   - 5.4
 
+env:
+  - DOCTRINE_VERSION=2.0.x
+  - DOCTRINE_VERSION=2.1.x
+  - DOCTRINE_VERSION=master
+
 before_script: php vendors.php
 
 script: phpunit --configuration phpunit.dist.xml
