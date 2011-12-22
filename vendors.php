@@ -2,6 +2,8 @@
 
 set_time_limit(0);
 
+$vendorDir = __DIR__.'/vendor';
+
 $deps = array(
     array('doctrine/common', 'https://github.com/doctrine/common.git', 'origin/2.1.x'),
     array('doctrine/dbal', 'https://github.com/doctrine/dbal.git', 'origin/2.1.x'),
