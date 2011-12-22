@@ -3,3 +3,4 @@ phpunit.xml
 autoload.php
 
 cov/
+vendor/doctrine/
