@@ -1,0 +1,21 @@
+{
+    "name": "fpn/doctrine-extensions-taggable",
+    "description": "Tag system using Doctrine ORM",
+    "keywords": ["tag", "taggable"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fabien Pennequin",
+            "email": "fabien@pennequin.me"
+        }
+    ],
+    "require": {
+        "doctrine/orm": ">=2.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "DoctrineExtensions": "lib/"
+        }
+    }
+}
