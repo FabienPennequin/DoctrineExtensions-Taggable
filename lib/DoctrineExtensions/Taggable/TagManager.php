@@ -173,6 +173,10 @@ class TagManager
                     ->delete($this->taggingClass, 't')
                     ->where('t.tag_id')
                     ->where($builder->expr()->in('t.tag', $tagsToRemove))
+                    ->andWhere('t.resourceType = :resourceType')
+                    ->setParameter('resourceType', $resource->getTaggableType())
+                    ->andWhere('t.resourceId = :resourceId')
+                    ->setParameter('resourceId', $resource->getTaggableId())
                     ->getQuery()
                     ->getResult()
                 ;
