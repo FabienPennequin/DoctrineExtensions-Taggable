@@ -154,7 +154,7 @@ class TagManager
         $newTags = $resource->getTags();
         $tagsToAdd = $newTags;
 
-        if ($oldTags != null and is_array($oldTags)) {
+        if ($oldTags !== null and is_array($oldTags) and !empty($oldTags)) {
             $tagsToRemove = array();
 
             foreach ($oldTags as $oldTag) {
@@ -188,7 +188,9 @@ class TagManager
             $this->em->persist($this->createTagging($tag, $resource));
         }
 
-        $this->em->flush();
+        if (count($tagsToAdd)) {
+            $this->em->flush();
+        }
     }
 
     /**
