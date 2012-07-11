@@ -106,4 +106,17 @@ class Tag
     {
         return $this->metadata;
     }
+    
+    /**
+     * Returns tag's Metadata object (if exists)
+     *
+     * @return string
+     */
+    public function getMetadata($name)
+    {
+        $function = "getMetadata".$name;
+        return $this->getTagging()->current()->$function();
+    }
+    
+    
 }
