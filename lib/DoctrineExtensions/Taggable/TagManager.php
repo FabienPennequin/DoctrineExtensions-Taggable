@@ -215,6 +215,7 @@ class TagManager
             ->createQueryBuilder()
 
             ->select('t')
+            ->addSelect('t2')
             ->from($this->tagClass, 't')
 
             ->innerJoin('t.tagging', 't2', Expr\Join::WITH, 't2.resourceId = :id AND t2.resourceType = :type')
