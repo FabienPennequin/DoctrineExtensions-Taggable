@@ -331,7 +331,7 @@ class TagManager
     }
 
     /**
-     * Creates a new Tagging object
+     * Creates a new Tagging object and sets metadata (if applicable)
      *
      * @param Tag       $tag        Tag object
      * @param Taggable  $resource   Taggable resource object
