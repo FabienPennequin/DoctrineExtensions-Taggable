@@ -27,7 +27,7 @@ class Tagging
     /**
      * Constructor
      */
-    public function __construct(Tag $tag = null, Taggable $resource = null)
+    public function __construct(Tag $tag = null, Taggable $resource = null, array $metadata = null)
     {
         if ($tag != null) {
             $this->setTag($tag);
