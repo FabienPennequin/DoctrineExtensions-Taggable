@@ -128,7 +128,7 @@ class TagManager
             $loadedNames[] = $tag->getName();
         }
 
-        $missingNames = array_diff($names, $loadedNames);
+        $missingNames = array_udiff($names, $loadedNames, 'strcasecmp');
         if (sizeof($missingNames)) {
             foreach ($missingNames as $name) {
                 $tag = $this->createTag($name);
