@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\Commons\Collections\Collection;
 use DoctrineExtensions\Taggable\Entity\Tag;
+use DoctrineExtensions\Taggable\Entity\TagMetadata;
 use DoctrineExtensions\Taggable\Entity\Tagging;
 
 /**
@@ -45,6 +46,20 @@ class TagManager
     {
         $resource->getTags()->add($tag);
     }
+    
+    /**
+     * Adds a tag (and temporarily stores metadata to it)
+     * on the given taggable resource.
+     *
+     * @param Tag       $tag        Tag object
+     * @param Metadata  $metadata   TagMetadata object
+     * @param Taggable  $resource   Taggable resource
+     */
+    public function addTagWithMetadata(Tag $tag, TagMetadata $metadata, Taggable $resource)
+    {
+        $tag->setTagMetadata($metadata);
+        $resource->getTags()->add($tag);
+    }
 
     /**
      * Adds multiple tags on the given taggable resource
@@ -57,6 +72,23 @@ class TagManager
         foreach ($tags as $tag) {
             if ($tag instanceof Tag) {
                 $this->addTag($tag, $resource);
+            }
+        }
+    }
+    
+    /**
+     * Adds multiple tags on the given taggable resource and
+     * stores an additional temporary metadata object to each.
+     *
+     * @param Tag[]     $tags       Array of Tag objects
+     * @param Metadata  $metadata   TagMetadata object
+     * @param Taggable  $resource   Taggable resource
+     */
+    public function addTagsWithMetadata(array $tags, TagMetaData $metadata, Taggable $resource)
+    {
+        foreach ($tags as $tag) {
+            if ($tag instanceof Tag) {
+                $this->addTagWithMetadata($tag, $metadata, $resource);
             }
         }
     }
@@ -215,6 +247,7 @@ class TagManager
             ->createQueryBuilder()
 
             ->select('t')
+            ->addSelect('t2')
             ->from($this->tagClass, 't')
 
             ->innerJoin('t.tagging', 't2', Expr\Join::WITH, 't2.resourceId = :id AND t2.resourceType = :type')
@@ -298,7 +331,7 @@ class TagManager
     }
 
     /**
-     * Creates a new Tagging object
+     * Creates a new Tagging object and sets metadata (if applicable)
      *
      * @param Tag       $tag        Tag object
      * @param Taggable  $resource   Taggable resource object
@@ -306,6 +339,16 @@ class TagManager
      */
     protected function createTagging(Tag $tag, Taggable $resource)
     {
-        return new $this->taggingClass($tag, $resource);
+        $tagging = new $this->taggingClass($tag, $resource);
+        if($metadump = $tag->getTagMetadata()) { 
+            foreach($metadump->dump() as $metadata)
+            { 
+                //Correlate it to a custom tagging metadata field and add the value.
+                $function = "setMetadata".$metadata['name'];
+                $tagging->$function($metadata['value']);
+            }
+        }
+        return $tagging;
+        
     }
 }

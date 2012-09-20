@@ -21,6 +21,8 @@ class Tag
     protected $updatedAt;
 
     protected $tagging;
+    
+    protected $metadata; //Not an existing column in the database, here for storage.
 
 
     /**
@@ -84,4 +86,37 @@ class Tag
     {
         return $this->updatedAt;
     }
+    
+    /**
+     * Sets the tag's Metadata object
+     *
+     * @param string $name Name to set
+     */
+    public function setTagMetadata($metadata)
+    {
+        $this->metadata = $metadata;
+    }
+
+    /**
+     * Returns tag's Metadata object (if exists)
+     *
+     * @return string
+     */
+    public function getTagMetadata()
+    {
+        return $this->metadata;
+    }
+    
+    /**
+     * Returns tag's Metadata object (if exists)
+     *
+     * @return string
+     */
+    public function getMetadata($name)
+    {
+        $function = "getMetadata".$name;
+        return $this->getTagging()->current()->$function();
+    }
+    
+    
 }
