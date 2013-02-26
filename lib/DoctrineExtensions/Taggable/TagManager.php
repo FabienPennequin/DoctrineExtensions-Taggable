@@ -153,7 +153,8 @@ class TagManager
         $oldTags = $this->getTagging($resource);
         $newTags = $resource->getTags();
         $tagsToAdd = $newTags;
-
+        $changes = false;
+        
         if ($oldTags !== null and is_array($oldTags) and !empty($oldTags)) {
             $tagsToRemove = array();
 
@@ -168,6 +169,7 @@ class TagManager
             }
 
             if (sizeof($tagsToRemove)) {
+                $changes = true;
                 $builder = $this->em->createQueryBuilder();
                 $builder
                     ->delete($this->taggingClass, 't')
@@ -184,6 +186,7 @@ class TagManager
         }
 
         foreach ($tagsToAdd as $tag) {
+            $changes = true;
             $this->em->persist($tag);
             $this->em->persist($this->createTagging($tag, $resource));
         }
@@ -191,6 +194,8 @@ class TagManager
         if (count($tagsToAdd)) {
             $this->em->flush();
         }
+        
+        return $changes;
     }
 
     /**
