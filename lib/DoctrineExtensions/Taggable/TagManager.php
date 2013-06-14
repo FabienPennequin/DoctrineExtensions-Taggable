@@ -227,6 +227,57 @@ class TagManager
             ->getResult()
         ;
     }
+    
+    /**
+     * Preload tags for a set of objects.
+     * It might be usefull in case you want to
+     * display a long list of taggable objects with their associated tags: it
+     * avoids to load tags per object, and gets all tags in a few requests.
+     *
+     * @param \Iterable &$entities
+     */
+    public function preloadTags(\Iterable &$entities)
+    {
+        $searched = array();
+
+        foreach ($entities as $entity) {
+            if (!$entity instanceof Taggable) {
+                throw new \InvalidArgumentError(
+                    'Entities passed to TagManager::preloadTags() must implement DoctrineExtensions\Taggable\Taggable.'
+                );
+            }
+            $taggable_type = $entity->getTaggableType();
+            if (!isset($searched[$taggable_type])) {
+                $searched[$taggable_type] = array();
+            }
+            $searched[$taggable_type][$entity->getTaggableId()] = $entity;
+            $entity->getTags()->clear();
+        }
+        
+        $qb = $this->em->createQueryBuilder()
+            ->select('tagging, tag')
+            ->from($this->taggingClass, 'tagging')
+            ->leftJoin('tagging.tag', 'tag')
+            ->orderBy('tagging.resourceId');
+
+        foreach($searched as $taggable_type => $instances)
+        {
+            $qb_clone = clone $qb;
+            $taggings = $qb_clone
+                ->where('tagging.resourceType = :type')
+                ->andWhere(
+                    $qb_clone->expr()->in('tagging.resourceId', array_keys($instances))
+                )->setParameter('type', $taggable_type)
+                ->getQuery()->getResult();
+
+            foreach($taggings as $tagging)
+            {
+                $entity = $instances[$tagging->getResourceId()];
+                $this->addTag($tagging->getTag(), $entity);
+            }
+        }
+    }
+
 
     /**
      * Deletes all tagging records for the given taggable resource
