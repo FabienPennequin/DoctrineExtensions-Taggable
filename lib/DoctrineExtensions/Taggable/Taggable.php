@@ -22,7 +22,7 @@ interface Taggable
      *
      * @return string
      */
-    function getTaggableType();
+    static function getTaggableType();
 
     /**
      * Returns the unique taggable resource identifier

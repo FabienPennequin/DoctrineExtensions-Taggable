@@ -34,7 +34,7 @@ class Article implements Taggable
         return $this->title = $title;
     }
 
-    public function getTaggableType()
+    public static function getTaggableType()
     {
         return 'test-article';
     }
