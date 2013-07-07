@@ -14,6 +14,7 @@ use DoctrineExtensions\Taggable\TagManager;
 use DoctrineExtensions\Taggable\TagListener;
 use DoctrineExtensions\Taggable\Entity\Tag;
 use Tests\DoctrineExtensions\Taggable\Fixtures\Article;
+use Doctrine\ORM\Tools\SchemaValidator;
 
 
 class TagManagerTest extends \PHPUnit_Framework_TestCase
@@ -317,5 +318,22 @@ class TagManagerTest extends \PHPUnit_Framework_TestCase
         $this->manager->addTags(array($tag2, $tag3), $article);
         $this->assertEquals(array('Smallville', 'Superman', 'TV'), $this->manager->getTagNames($article));
     }
+
+    /**
+     * checks for valid schema
+     */
+    public function testValidSchema()
+    {
+        $validator = new SchemaValidator($this->em);
+        $errors = $validator->validateClass($this->em->getClassMetadata('DoctrineExtensions\\Taggable\\Entity\\Tag'));
+        
+        if (count($errors) > 0) {
+            // Lots of errors!
+            echo PHP_EOL . implode("\n\n", $errors);
+        }
+
+        $this->assertEquals(0, count($errors));
+    }
+
 
 }
