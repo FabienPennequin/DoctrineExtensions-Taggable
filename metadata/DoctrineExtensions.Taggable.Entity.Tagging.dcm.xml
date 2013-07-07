@@ -16,7 +16,7 @@
         <field name="createdAt"     column="created_at"     type="datetime" />
         <field name="updatedAt"     column="updated_at"     type="datetime" />
 
-        <many-to-one field="tag" target-entity="DoctrineExtensions\Taggable\Entity\Tag">
+        <many-to-one field="tag" target-entity="DoctrineExtensions\Taggable\Entity\Tag" inversed-by="tagging">
             <join-columns>
                 <join-column name="tag_id" referenced-column-name="id" />
             </join-columns>
