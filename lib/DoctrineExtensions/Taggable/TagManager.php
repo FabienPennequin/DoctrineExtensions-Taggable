@@ -137,7 +137,7 @@ class TagManager
                 $tags[] = $tag;
             }
 
-            $this->em->flush();
+            $this->em->flush($tags);
         }
 
         return $tags;
