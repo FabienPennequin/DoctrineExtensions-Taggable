@@ -137,7 +137,7 @@ class TagManager
                 $tags[] = $tag;
             }
 
-            $this->em->flush();
+            $this->em->flush($tags);
         }
 
         return $tags;
@@ -183,13 +183,17 @@ class TagManager
             }
         }
 
+        $toFlush = array();
         foreach ($tagsToAdd as $tag) {
             $this->em->persist($tag);
-            $this->em->persist($this->createTagging($tag, $resource));
+            $tagging = $this->createTagging($tag, $resource);
+            $this->em->persist($tagging);
+            $toFlush[] = $tag;
+            $toFlush[] = $tagging;
         }
 
         if (count($tagsToAdd)) {
-            $this->em->flush();
+            $this->em->flush($toFlush);
         }
     }
 
