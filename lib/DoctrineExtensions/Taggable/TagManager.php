@@ -98,6 +98,18 @@ class TagManager
     }
 
     /**
+     * fixed version of default strcasecmp with international characters support
+     * @param $str1
+     * @param $str2
+     * @param null $encoding
+     * @return int
+     */
+    public function mb_strcasecmp($str1, $str2, $encoding = null) {
+        if (null === $encoding) { $encoding = mb_internal_encoding(); }
+        return strcmp(mb_strtolower($str1, $encoding), mb_strtolower($str2, $encoding));
+    }
+
+    /**
      * Loads or creates multiples tags from a list of tag names
      *
      * @param array  $names   Array of tag names
@@ -128,7 +140,7 @@ class TagManager
             $loadedNames[] = $tag->getName();
         }
 
-        $missingNames = array_udiff($names, $loadedNames, 'strcasecmp');
+        $missingNames = array_udiff($names, $loadedNames, array($this, 'mb_strcasecmp'));
         if (sizeof($missingNames)) {
             foreach ($missingNames as $name) {
                 $tag = $this->createTag($name);
