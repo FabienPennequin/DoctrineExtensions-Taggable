@@ -2,13 +2,13 @@
 
 namespace Tests\DoctrineExtensions\Taggable\Fixtures;
 
-use DoctrineExtensions\Taggable\Taggable;
+use DoctrineExtensions\Taggable\TaggableStringInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
  */
-class Article implements Taggable
+class TaggableStringArticle implements TaggableStringInterface
 {
     /**
      * @Id
@@ -24,6 +24,8 @@ class Article implements Taggable
 
     protected $tags;
 
+    protected $tagString;
+
     public function getId()
     {
         return $this->id;
@@ -36,7 +38,7 @@ class Article implements Taggable
 
     public function getTaggableType()
     {
-        return 'test-article';
+        return 'test-article-with-tag-string';
     }
 
     public function getTaggableId()
@@ -44,9 +46,13 @@ class Article implements Taggable
         return $this->getId();
     }
 
-    public function getTags()
+    public function getTagString()
     {
-        $this->tags = $this->tags ?: new ArrayCollection();
-        return $this->tags;
+        return $this->tagString;
+    }
+
+    public function setTagString($tagString)
+    {
+        $this->tagString = $tagString;
     }
 }
