@@ -151,7 +151,7 @@ class TagManager
     public function saveTagging(Taggable $resource)
     {
         $oldTags = $this->getTagging($resource);
-        $newTags = $resource->getTags();
+        $newTags = clone $resource->getTags();
         $tagsToAdd = $newTags;
 
         if ($oldTags !== null and is_array($oldTags) and !empty($oldTags)) {
