@@ -12,7 +12,7 @@ namespace DoctrineExtensions\Taggable;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Expr;
-use Doctrine\Commons\Collections\Collection;
+use Doctrine\Common\Collections\Collection;
 use DoctrineExtensions\Taggable\Entity\Tag;
 use DoctrineExtensions\Taggable\Entity\Tagging;
 
