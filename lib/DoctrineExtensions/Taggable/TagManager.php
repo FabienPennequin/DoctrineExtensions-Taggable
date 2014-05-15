@@ -128,7 +128,9 @@ class TagManager
             $loadedNames[] = $tag->getName();
         }
 
-        $missingNames = array_udiff($names, $loadedNames, 'strcasecmp');
+        $missingNames = array_udiff($names, $loadedNames, function ($str1, $str2) {
+            return strcmp(mb_strtolower($str1, 'UTF8'), mb_strtolower($str2, 'UTF8'));
+        });
         if (sizeof($missingNames)) {
             foreach ($missingNames as $name) {
                 $tag = $this->createTag($name);
@@ -151,7 +153,7 @@ class TagManager
     public function saveTagging(Taggable $resource)
     {
         $oldTags = $this->getTagging($resource);
-        $newTags = $resource->getTags();
+        $newTags = clone $resource->getTags();
         $tagsToAdd = $newTags;
 
         if ($oldTags !== null and is_array($oldTags) and !empty($oldTags)) {
