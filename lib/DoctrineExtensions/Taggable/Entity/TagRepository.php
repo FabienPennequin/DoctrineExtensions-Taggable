@@ -111,4 +111,21 @@ class TagRepository extends EntityRepository
             ->setParameter('resourceType', $taggableType)
         ;
     }
+    
+    /**
+     * Find orphaned tags without associated taggableType
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getOrphanTags()
+    {
+        return $this
+            ->createQueryBuilder('tag')
+            ->select('tag as tag_object, COUNT(tagging.tag) as tag_count')
+            ->leftJoin('tag.tagging', 'tagging')
+            ->having('tag_count = 0')
+            ->groupBy('tag.id')
+            ->orderBy('tag_count', 'DESC')
+        ;
+    }
 }
