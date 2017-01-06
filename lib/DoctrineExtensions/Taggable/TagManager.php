@@ -86,9 +86,9 @@ class TagManager
     }
 
     /**
-     * Loads or creates a tag from tag name
+     * Loads or creates a tag from tag name.
      *
-     * @param array  $name  Tag name
+     * @param string $name
      * @return Tag
      */
     public function loadOrCreateTag($name)
